@@ -38,7 +38,7 @@ export function agregarDisco(nombre){
  
       try{
 
-         let [{id}] = await conexion `INSERT INTO discos (nombre) VALUES (${nombre}) RETURNING id`;
+         let [{id}] = await conexion `INSERT INTO discos (nombre, estado) VALUES (${nombre}, false) RETURNING id`;
          conexion.end();
          ok(id);
 
@@ -89,15 +89,16 @@ export function editarDisco(id,nombre){
     });
 };
 
-export function estadoDisco(id,estado){
+export function actualizarEstado(id,nuevoFavorito){
     return new Promise(async (ok,ko) => {
         try{
             let conexion = await conectar();
+           
 
-            let resultado = await conexion `UPDATE discos SET estado = ${estado}  WHERE id=${id}`;
-
+            let resultado = await conexion`UPDATE discos SET favorito = ${nuevoFavorito} WHERE id = ${id}`
             
             conexion.end();
+
             ok(resultado);
 
         }catch(error){
@@ -105,6 +106,8 @@ export function estadoDisco(id,estado){
         }
     });
 };
+
+
 
 
 
