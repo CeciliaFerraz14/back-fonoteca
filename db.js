@@ -19,7 +19,7 @@ export function leerDiscos(){
  
       try{
 
-         let discos = await conexion `SELECT * FROM discos`;
+         let discos = await conexion `SELECT * FROM discos ORDER BY id ASC`;
          conexion.end();
          ok(discos);
 
