@@ -38,7 +38,7 @@ export function agregarDisco(nombre){
  
       try{
 
-         let [{id}] = await conexion `INSERT INTO discos (nombre, estado) VALUES (${nombre}, false) RETURNING id`;
+         let [{id}] = await conexion `INSERT INTO discos (nombre, favorito) VALUES (${nombre}, false) RETURNING id`;
          conexion.end();
          ok(id);
 

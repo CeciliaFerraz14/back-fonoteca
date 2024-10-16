@@ -62,7 +62,7 @@ servidor.put("/discos/editar/:id",async(peticion,respuesta)=>{
         if(peticion.body.disco && peticion.body.disco.trim() != ""){
         let {disco} = peticion.body;
 
-        let cantidad = await actualizarEstado(peticion.params.id,disco);
+        let cantidad = await editarDisco(peticion.params.id,disco);
 
         return respuesta.json({ resultado : cantidad ? "ok" : "ko" });
 
