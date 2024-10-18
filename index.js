@@ -24,9 +24,9 @@ servidor.post("/discos/nueva", async(peticion,respuesta)=>{
     try{
         
         if(peticion.body.disco && peticion.body.disco.trim() != ""){
-            let {disco} = peticion.body;
+            let {disco,artista,genero} = peticion.body;
 
-            let id = await agregarDisco(disco);
+            let id = await agregarDisco(disco,artista,genero);
 
             return respuesta.json({id});
 
@@ -58,11 +58,12 @@ servidor.delete("/discos/borrar/:id",async(peticion,respuesta)=>{
 });
 
 servidor.put("/discos/editar/:id",async(peticion,respuesta)=>{
+    let {disco,artista,genero} = peticion.body;
     try{
-        if(peticion.body.disco && peticion.body.disco.trim() != ""){
-        let {disco} = peticion.body;
+        if(peticion.body.disco && peticion.body.disco.trim() != "" && artista && artista.trim() !== "" && genero && genero.trim() !== ""){
+        
 
-        let cantidad = await editarDisco(peticion.params.id,disco);
+        let cantidad = await editarDisco(peticion.params.id,disco.trim(),artista.trim(),genero.trim());
 
         return respuesta.json({ resultado : cantidad ? "ok" : "ko" });
 

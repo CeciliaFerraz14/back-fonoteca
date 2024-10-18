@@ -32,13 +32,13 @@ export function leerDiscos(){
     
 };
 
-export function agregarDisco(nombre){
+export function agregarDisco(nombre,artista,genero){
     return new Promise (async (ok,ko) => {
       const conexion = conectar() 
  
       try{
 
-         let [{id}] = await conexion `INSERT INTO discos (nombre, favorito) VALUES (${nombre}, false) RETURNING id`;
+         let [{id}] = await conexion `INSERT INTO discos (nombre,artista,genero,favorito) VALUES (${nombre},${artista},${genero}, false) RETURNING id`;
          conexion.end();
          ok(id);
 
@@ -72,12 +72,12 @@ export function borrarDisco(id){
     });
 }
 
-export function editarDisco(id,nombre){
+export function editarDisco(id,nombre,artista,genero){
     return new Promise(async (ok,ko) => {
         try{
             let conexion = await conectar();
 
-            let resultado = await conexion `UPDATE discos SET nombre = ${nombre}  WHERE id=${id}`;
+            let resultado = await conexion `UPDATE discos SET nombre = ${nombre}, artista= ${artista}, genero = ${genero} WHERE id=${id}`;
             
             conexion.end();
 
