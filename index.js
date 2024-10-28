@@ -1,115 +1,101 @@
 import express from "express";
 import cors from "cors";
-import { leerDiscos, agregarDisco, editarDisco,  borrarDisco, actualizarEstado} from "./db.js";
+import {
+  leerDiscos,
+  agregarDisco,
+  editarDisco,
+  borrarDisco,
+  actualizarEstado,
+} from "./db.js";
 
 const servidor = express();
+servidor.get('/favicon.ico', (peticion, respuesta) => respuesta.status(204).end()); //he añadido esta linea parae ignorar el problema de Favicon
 
 servidor.use(cors());
 servidor.use(express.json());
 
-
-servidor.get("/discos", async(peticion,respuesta)=>{
-
-    try{
-        let discos = await leerDiscos();
-        respuesta.json(discos);
-    }catch (error){
-        respuesta.status(500);
-        respuesta.json(error);
-    };
-
+servidor.get("/discos", async (peticion, respuesta) => {
+  try {
+    let discos = await leerDiscos();
+    respuesta.json(discos);
+  } catch (error) {
+    respuesta.status(500);
+    respuesta.json(error);
+  }
 });
 
-servidor.post("/discos/nueva", async(peticion,respuesta)=>{
-    try{
-        
-        if(peticion.body.disco && peticion.body.disco.trim() != ""){
-            let {disco,artista,genero} = peticion.body;
+servidor.post("/discos/nueva", async (peticion, respuesta) => {
+  try {
+    if (peticion.body.disco && peticion.body.disco.trim() != "") {
+      let { disco, artista, genero } = peticion.body;
 
-            let id = await agregarDisco(disco,artista,genero);
+      let id = await agregarDisco(disco, artista, genero);
 
-            return respuesta.json({id});
-
-        }
-
-    }catch(error){
-
-        respuesta.status(500);
-
-        respuesta.json({ error : "error en el servidor" });
-
+      return respuesta.json({ id });
     }
-});
-
-servidor.delete("/discos/borrar/:id",async(peticion,respuesta)=>{
-    try{
-        let{id} = peticion.params;
-        let cantidad = await borrarDisco(id);
-
-        respuesta.json({ resultado : cantidad ? "ok" : "ko" });
-
-    }catch(error){
-
-        respuesta.status(500);
-
-        respuesta.json({ error : "error en el servidor al borrar" });
-
-    }
-});
-
-servidor.put("/discos/editar/:id",async(peticion,respuesta)=>{
-    let {disco,artista,genero} = peticion.body;
-    try{
-        if(peticion.body.disco && peticion.body.disco.trim() != "" && artista && artista.trim() !== "" && genero && genero.trim() !== ""){
-        
-
-        let cantidad = await editarDisco(peticion.params.id,disco.trim(),artista.trim(),genero.trim());
-
-        return respuesta.json({ resultado : cantidad ? "ok" : "ko" });
-
-    }
-
-}catch(error){
-
+  } catch (error) {
     respuesta.status(500);
 
-    respuesta.json({ error : "error en el servidor al editar el disco" });
-
-}
+    respuesta.json({ error: "error en el servidor" });
+  }
 });
 
-servidor.put("/discos/actualizar/estado/:id",async(peticion,respuesta)=>{
-    try {
-        const { favorito } = peticion.body; // Cambiamos para obtener el estado favorito
-        const discoId = peticion.params.id;
+servidor.delete("/discos/borrar/:id", async (peticion, respuesta) => {
+  try {
+    let { id } = peticion.params;
+    let cantidad = await borrarDisco(id);
 
-        // Verificamos si se ha enviado el estado de favorito
-        if (typeof favorito === 'boolean') {
-            let cantidad = await actualizarEstado(discoId, favorito); // Se asume que editarDisco ahora maneja el estado de favorito
+    respuesta.json({ resultado: cantidad ? "ok" : "ko" });
+  } catch (error) {
+    respuesta.status(500);
 
-            return respuesta.json({ resultado: cantidad ? "ok" : "ko" });
-        } else {
-            return respuesta.status(400).json({ error: "El estado de favorito debe ser un booleano" });
-        }
-    } catch (error) {
-        console.error(error); // Agregar logs para depuración
-        respuesta.status(500).json({ error: "error en el servidor al editar el disco" });
+    respuesta.json({ error: "error en el servidor al borrar" });
+  }
+});
+
+servidor.put("/discos/editar/:id", async (peticion, respuesta) => {
+  let { disco, artista, genero } = peticion.body;
+  try {
+    if (
+      peticion.body.disco &&
+      peticion.body.disco.trim() != "" &&
+      artista &&
+      artista.trim() !== "" &&
+      genero &&
+      genero.trim() !== ""
+    ) {
+      let cantidad = await editarDisco(
+        peticion.params.id,
+        disco.trim(),
+        artista.trim(),
+        genero.trim()
+      );
+
+      return respuesta.json({ resultado: cantidad ? "ok" : "ko" });
     }
+  } catch (error) {
+    respuesta.status(500);
+
+    respuesta.json({ error: "error en el servidor al editar el disco" });
+  }
 });
-        
 
+servidor.put("/discos/actualizar/estado/:id", async (peticion, respuesta) => {
+  try {
+    const { favorito } = peticion.body; 
+    const discoId = peticion.params.id;
 
+    if (typeof favorito === "boolean") {
+      let cantidad = await actualizarEstado(discoId, favorito); 
 
-
-
-
-
-
-
-
-
-
-
-
+      return respuesta.json({ resultado: cantidad ? "ok" : "ko" });
+    } 
+  } catch (error) {
+    
+    respuesta
+      .status(500)
+      .json({ error: "error en el servidor al editar el disco" });
+  }
+});
 
 servidor.listen(4000);
