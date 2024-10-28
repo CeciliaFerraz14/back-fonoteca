@@ -1,12 +1,15 @@
 import postgres from "postgres";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 function conectar() {
   return postgres({
-    host: "localhost",
-    port: 5432,
-    database: "discos",
-    user: "postgres",
-    password: "root",
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
   });
 }
 
